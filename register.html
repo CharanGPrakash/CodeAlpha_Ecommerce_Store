@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Register — BuyBee</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f2f5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .site-logo {
+      margin-top: 32px;
+      margin-bottom: 20px;
+      text-align: center;
+      animation: logoDrop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+
+    .site-logo a {
+      text-decoration: none;
+      font-size: 2.4rem;
+      font-weight: 900;
+      color: #1a1a2e;
+      letter-spacing: 1px;
+    }
+
+    .site-logo a span { color: #f5c518; }
+
+    .bee-emoji {
+      display: inline-block;
+      animation: beeSpin 1s ease-out 0.7s both;
+    }
+
+    @keyframes logoDrop {
+      0%   { opacity: 0; transform: translateY(-30px) scale(0.85); }
+      70%  { transform: translateY(4px) scale(1.04); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes beeSpin {
+      0%   { transform: rotate(-20deg) scale(0.5); opacity: 0; }
+      60%  { transform: rotate(15deg) scale(1.2); opacity: 1; }
+      100% { transform: rotate(0deg) scale(1); }
+    }
+
+    main {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      padding: 0 20px 40px;
+    }
+
+    .auth-card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+      padding: 36px 40px;
+      width: 100%;
+      max-width: 420px;
+      animation: cardUp 0.5s ease 0.3s both;
+    }
+
+    @keyframes cardUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .auth-card h2 { font-size: 1.5rem; color: #1a1a2e; margin-bottom: 6px; }
+    .auth-card p.subtitle { color: #888; font-size: 0.88rem; margin-bottom: 24px; }
+
+    .form-group { margin-bottom: 16px; }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #444;
+      margin-bottom: 6px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      color: #333;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-group input:focus { border-color: #f5c518; }
+
+    #strengthBar {
+      height: 4px;
+      border-radius: 4px;
+      margin-top: 6px;
+      background: #eee;
+      width: 0%;
+      transition: width 0.3s, background 0.3s;
+    }
+
+    #strengthText { font-size: 0.78rem; margin-top: 4px; color: #888; }
+
+    .btn-primary {
+      width: 100%;
+      padding: 12px;
+      background: #f5c518;
+      color: #1a1a2e;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn-primary:hover { background: #e6b800; }
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-primary:disabled { background: #ddd; color: #999; cursor: not-allowed; }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 20px 0 16px;
+      color: #bbb;
+      font-size: 0.85rem;
+    }
+
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #eee;
+    }
+
+    .auth-footer { text-align: center; font-size: 0.9rem; color: #888; }
+
+    .auth-footer a {
+      color: #1a1a2e;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .auth-footer a:hover { text-decoration: underline; }
+
+    #message {
+      display: none;
+      padding: 11px 14px;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      margin-bottom: 14px;
+      text-align: center;
+    }
+
+    #message.success { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+    #message.error   { background: #fdecea; color: #c62828; border: 1px solid #ef9a9a; }
+
+    footer {
+      margin-top: auto;
+      width: 100%;
+      background: #1a1a2e;
+      color: #aaa;
+      text-align: center;
+      padding: 14px;
+      font-size: 0.83rem;
+    }
+
+    footer a { color: #f5c518; text-decoration: none; margin: 0 8px; }
+    footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+  <div class="site-logo">
+    <a href="index.html">Buy<span>Bee</span> <span class="bee-emoji">🐝</span></a>
+  </div>
+
+  <main>
+    <div class="auth-card">
+      <h2>Create account</h2>
+      <p class="subtitle">Join BuyBee and start shopping today</p>
+
+      <div id="message"></div>
+
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <input type="text" id="name" placeholder="John Doe" />
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" placeholder="you@example.com" />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="At least 6 characters"
+          oninput="checkStrength(this.value)" />
+        <div id="strengthBar"></div>
+        <div id="strengthText"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <input type="password" id="confirmPassword" placeholder="Repeat your password" />
+      </div>
+
+      <button class="btn-primary" id="registerBtn" onclick="handleRegister()">Create Account</button>
+
+      <div class="divider">Already a member?</div>
+
+      <div class="auth-footer">
+        <a href="login.html">Sign in to your account →</a>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <a href="#">Conditions of Use</a>
+    <a href="#">Privacy Notice</a>
+    <a href="#">Help</a>
+    <br><br>© 2026 BuyBee. All rights reserved.
+  </footer>
+
+  <script>
+    const API_BASE = 'http://localhost:5000';
+
+    if (localStorage.getItem('token')) window.location.href = 'index.html';
+
+    function checkStrength(value) {
+      const bar = document.getElementById('strengthBar');
+      const text = document.getElementById('strengthText');
+      if (!value) { bar.style.width = '0%'; text.textContent = ''; return; }
+
+      let s = 0;
+      if (value.length >= 6) s++;
+      if (value.length >= 10) s++;
+      if (/[A-Z]/.test(value)) s++;
+      if (/[0-9]/.test(value)) s++;
+      if (/[^A-Za-z0-9]/.test(value)) s++;
+
+      const levels = [
+        { label: 'Very weak',   color: '#e53935', width: '20%' },
+        { label: 'Weak',        color: '#fb8c00', width: '40%' },
+        { label: 'Fair',        color: '#fdd835', width: '60%' },
+        { label: 'Strong',      color: '#43a047', width: '80%' },
+        { label: 'Very strong', color: '#1b5e20', width: '100%' },
+      ];
+      const l = levels[Math.min(s - 1, 4)];
+      bar.style.width = l.width;
+      bar.style.background = l.color;
+      text.textContent = `Password strength: ${l.label}`;
+      text.style.color = l.color;
+    }
+
+    async function handleRegister() {
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const confirmPassword = document.getElementById('confirmPassword').value.trim();
+      const btn = document.getElementById('registerBtn');
+
+      if (!name || !email || !password || !confirmPassword) return showMessage('Please fill in all fields.', 'error');
+      if (password.length < 6) return showMessage('Password must be at least 6 characters.', 'error');
+      if (password !== confirmPassword) return showMessage('Passwords do not match.', 'error');
+
+      btn.disabled = true;
+      btn.textContent = 'Creating account...';
+
+      try {
+        const res = await fetch(`${API_BASE}/api/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password })
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          showMessage('Account created! Redirecting to login...', 'success');
+          setTimeout(() => window.location.href = 'login.html', 1500);
+        } else {
+          showMessage(data.message || 'Registration failed. Try again.', 'error');
+          btn.disabled = false;
+          btn.textContent = 'Create Account';
+        }
+      } catch {
+        showMessage('Cannot connect to server. Make sure backend is running.', 'error');
+        btn.disabled = false;
+        btn.textContent = 'Create Account';
+      }
+    }
+
+    function showMessage(text, type) {
+      const msg = document.getElementById('message');
+      msg.textContent = text;
+      msg.className = type;
+      msg.style.display = 'block';
+    }
+
+    document.addEventListener('keydown', e => { if (e.key === 'Enter') handleRegister(); });
+  </script>
+
+</body>
+</html>

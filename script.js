@@ -1,56 +1,219 @@
-// Sample product data
-const products = [
-  { id: 1, name: "T-Shirt", price: 499, image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=300" },
-  { id: 2, name: "Sneakers", price: 1999, image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300" },
-  { id: 3, name: "Backpack", price: 1299, image: "https://images.unsplash.com/photo-1547949003-9792a18a2601?w=300" },
-  { id: 4, name: "Watch", price: 2499, image: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=300" },
-  { id: 5, name: "Sunglasses", price: 799, image: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=300" },
-  { id: 6, name: "Cap", price: 399, image: "https://images.unsplash.com/photo-1521369909029-2afed882baee?w=300" },
-  { id: 7, name: "Jacket", price: 2999, image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=300" },
-  { id: 8, name: "Headphones", price: 1599, image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300" },
-  { id: 9, name: "Wallet", price: 699, image: "https://images.unsplash.com/photo-1627123424574-724758594e93?w=300" },
-  { id: 10, name: "Shoes", price: 2199, image: "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=300" }
-];
+const API_URL = "http://localhost:5000/api";
+let currentPage = 1;
+let currentCategory = "all";
+let currentSort = "default";
+let currentSearch = "";
+let isLoading = false;
+let hasMore = true;
+let currentMinPrice = null;
+let currentMaxPrice = null;
 
-
-const productList = document.getElementById("product-list");
-const cartCount = document.getElementById("cart-count");
-
-// Render products
-function renderProducts() {
-  productList.innerHTML = "";
-  products.forEach(product => {
-    const card = document.createElement("div");
-    card.classList.add("product-card");
-    card.innerHTML = `
-      <img src="${product.image}" alt="${product.name}">
-      <h3>${product.name}</h3>
-      <p>₹${product.price}</p>
-      <button onclick="addToCart(${product.id})">Add to Cart</button>
-    `;
-    productList.appendChild(card);
-  });
+// Toast notification
+function showToast(message) {
+  const toast = document.createElement("div");
+  toast.classList.add("toast");
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 2500);
 }
 
+// Build API URL with filters
+function buildURL() {
+  let url = `${API_URL}/products?page=${currentPage}&limit=20`;
+  if (currentCategory !== "all") url += `&category=${currentCategory}`;
+  if (currentSearch) url += `&search=${currentSearch}`;
+  if (currentSort !== "default") url += `&sort=${currentSort}`;
+  if (currentMinPrice) url += `&minPrice=${currentMinPrice}`;
+  if (currentMaxPrice) url += `&maxPrice=${currentMaxPrice}`;
+  return url;
+}
+// Fetch and render products
+async function fetchProducts(reset = false) {
+  if (isLoading || (!hasMore && !reset)) return;
+
+  const productList = document.getElementById("product-list");
+  if (!productList) return;
+
+  if (reset) {
+    currentPage = 1;
+    hasMore = true;
+    productList.innerHTML = "";
+  }
+
+  isLoading = true;
+
+  // Show loading spinner
+  const spinner = document.createElement("div");
+  spinner.id = "spinner";
+  spinner.innerHTML = `<div class="spinner"></div>`;
+  productList.appendChild(spinner);
+
+  try {
+    const response = await fetch(buildURL());
+    const data = await response.json();
+
+    // Remove spinner
+    const s = document.getElementById("spinner");
+    if (s) s.remove();
+
+    if (data.products.length === 0 && currentPage === 1) {
+      productList.innerHTML = "<p style='color:#888;text-align:center;padding:40px;'>No products found.</p>";
+      return;
+    }
+
+    data.products.forEach((product, index) => {
+      const card = document.createElement("div");
+      card.classList.add("product-card");
+      card.style.animationDelay = `${index * 0.05}s`;
+
+      const stars = "⭐".repeat(Math.round(product.rating));
+
+      card.innerHTML = `
+        <div class="product-image-wrap">
+          <img src="${product.image}" alt="${product.name}" loading="lazy">
+          <div class="product-badge">${product.brand}</div>
+        </div>
+        <div class="product-info">
+          <p class="product-seller">🏪 ${product.seller}</p>
+          <h3>${product.name}</h3>
+          <p class="desc">${product.description}</p>
+          <div class="product-rating">${stars} <span>(${product.rating})</span></div>
+          <p class="price">₹${product.price}</p>
+          <button onclick="addToCart('${product._id}', '${product.name}', ${product.price}, '${product.image}')">
+            🛒 Add to Cart
+          </button>
+        </div>
+      `;
+      productList.appendChild(card);
+    });
+
+    hasMore = data.hasMore;
+    currentPage++;
+
+    // Update product count
+    const countEl = document.getElementById("product-count");
+    if (countEl) countEl.textContent = `${data.total.toLocaleString()} products found`;
+
+  } catch (err) {
+    const s = document.getElementById("spinner");
+    if (s) s.remove();
+    console.error(err);
+  }
+
+  isLoading = false;
+}
+
+// Infinite scroll
+window.addEventListener("scroll", () => {
+  if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 500) {
+    fetchProducts();
+  }
+});
+
+// Filter by category
+function filterCategory(category, el) {
+  currentCategory = category;
+  currentSearch = "";
+  const searchInput = document.getElementById("search-input");
+  if (searchInput) searchInput.value = "";
+
+  document.querySelectorAll(".cat-link").forEach(l => l.classList.remove("active"));
+  if (el) el.classList.add("active");
+
+  fetchProducts(true);
+
+  // Scroll to products section
+  document.querySelector(".products-section").scrollIntoView({ behavior: "smooth" });
+}
+
+// Search
+let searchTimeout;
+function searchProducts() {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => {
+    currentSearch = document.getElementById("search-input").value.trim();
+    currentCategory = "all";
+    document.querySelectorAll(".cat-link").forEach(l => l.classList.remove("active"));
+    fetchProducts(true);
+  }, 400);
+}
+
+// Sort
+function sortProducts() {
+  currentSort = document.getElementById("sort-select").value;
+  fetchProducts(true);
+}
+function filterPrice() {
+  const value = document.getElementById("price-filter").value;
+  if (!value) {
+    currentMinPrice = null;
+    currentMaxPrice = null;
+  } else {
+    const [min, max] = value.split("-");
+    currentMinPrice = min;
+    currentMaxPrice = max;
+  }
+  fetchProducts(true);
+}
 // Add to cart
-function addToCart(id) {
-  const product = products.find(p => p.id === id);
-
-  // Load existing cart from localStorage
+function addToCart(id, name, price, image) {
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-  cart.push(product);
-
-  // Save back to localStorage
+  cart.push({ _id: id, name, price, image });
   localStorage.setItem("cart", JSON.stringify(cart));
-
-  cartCount.textContent = cart.length;
+  updateCartCount();
+  showToast(`✅ ${name} added to cart!`);
 }
 
-// On page load, set cart count from localStorage
+// Update cart count
 function updateCartCount() {
-  let cart = JSON.parse(localStorage.getItem("cart")) || [];
-  cartCount.textContent = cart.length;
+  const cartCount = document.getElementById("cart-count");
+  if (cartCount) {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+    cartCount.textContent = cart.length;
+  }
 }
-renderProducts();
-updateCartCount();
+
+// Update header
+function updateHeader() {
+  const user = JSON.parse(localStorage.getItem("user"));
+  const nav = document.getElementById("main-nav");
+  if (!nav) return;
+
+  if (user) {
+    nav.innerHTML = `
+      <span style="color:#888;font-size:13px;">Hi, ${user.name} 👋</span>
+      <a href="orders.html"><i class="fa fa-box"></i> Orders</a>
+      <a href="#" onclick="logout()"><i class="fa fa-sign-out-alt"></i> Logout</a>
+      <a href="cart.html" class="cart-btn">🛒 Cart (<span id="cart-count">0</span>)</a>
+    `;
+  } else {
+    nav.innerHTML = `
+      <a href="login.html"><i class="fa fa-user"></i> Login</a>
+      <a href="cart.html" class="cart-btn">🛒 Cart (<span id="cart-count">0</span>)</a>
+    `;
+  }
+  updateCartCount();
+}
+
+// Logout
+function logout() {
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  window.location.href = "login.html";
+}
+
+fetchProducts(true);
+updateHeader();
+// Filter by price
+function filterPrice() {
+  const value = document.getElementById("price-filter").value;
+  if (!value) {
+    currentMinPrice = null;
+    currentMaxPrice = null;
+  } else {
+    const [min, max] = value.split("-");
+    currentMinPrice = min;
+    currentMaxPrice = max;
+  }
+  fetchProducts(true);
+}

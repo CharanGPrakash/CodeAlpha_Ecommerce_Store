@@ -1,25 +1,163 @@
-<!DOCTYPE html>
+index.html: <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simple E-commerce Store</title>
+  <title>BuyBee - Premium Shopping</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
+  <!-- NAVBAR -->
   <header>
-    <h1>MyShop</h1>
-    <nav>
-      <a href="#">Home</a>
-      <a href="#">Cart (<span id="cart-count">0</span>)</a>
+    <div class="logo">Buy<span>Bee</span> 🐝</div>
+
+   <nav class="categories-nav">
+  <a href="#" onclick="filterCategory('all', this)" class="cat-link active">All</a>
+  <a href="#" onclick="filterCategory('clothing', this)" class="cat-link">👕 Clothing</a>
+  <a href="#" onclick="filterCategory('footwear', this)" class="cat-link">👟 Footwear</a>
+  <a href="#" onclick="filterCategory('accessories', this)" class="cat-link">⌚ Accessories</a>
+  <a href="#" onclick="filterCategory('electronics', this)" class="cat-link">🎧 Electronics</a>
+  <a href="#" onclick="filterCategory('bags', this)" class="cat-link">🎒 Bags</a>
+   </nav>
+
+    <nav id="main-nav">
+      <a href="orders.html"><i class="fa fa-box"></i> Orders</a>
+      <a href="login.html"><i class="fa fa-user"></i> Login</a>
+      <a href="cart.html" class="cart-btn">
+        <i class="fa fa-shopping-cart"></i> Cart (<span id="cart-count">0</span>)
+      </a>
     </nav>
   </header>
 
-  <main>
-    <h2>Products</h2>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-badge">🔥 New Arrivals</div>
+      <h2>Discover <span>Premium</span><br>Fashion & More</h2>
+      <p>Shop the latest trends with exclusive deals and fast delivery</p>
+      <div class="hero-btns">
+        <button class="hero-btn" onclick="document.querySelector('.products-section').scrollIntoView({behavior:'smooth'})">
+          Shop Now <i class="fa fa-arrow-right"></i>
+        </button>
+        <button class="hero-btn-outline" onclick="document.querySelector('.brands-section').scrollIntoView({behavior:'smooth'})">
+          View Brands
+        </button>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><span>10K+</span><p>Products</p></div>
+        <div class="stat"><span>50K+</span><p>Customers</p></div>
+        <div class="stat"><span>100+</span><p>Brands</p></div>
+      </div>
+    </div>
+    <div class="hero-image">
+      <div class="floating-card card1">👕 T-Shirt<br><small>₹499</small></div>
+      <div class="floating-card card2">⌚ Watch<br><small>₹2499</small></div>
+      <div class="floating-card card3">👟 Sneakers<br><small>₹1999</small></div>
+      <div class="hero-circle">🐝</div>
+    </div>
+  </section>
+
+  <!-- BRANDS -->
+  <section class="brands-section">
+    <h2>Top Brands</h2>
+    <div class="brands-scroll">
+      <div class="brand-item">👟 Nike</div>
+      <div class="brand-item">⭐ Adidas</div>
+      <div class="brand-item">🏆 Puma</div>
+      <div class="brand-item">💎 Levi's</div>
+      <div class="brand-item">🔥 Zara</div>
+      <div class="brand-item">✨ H&M</div>
+      <div class="brand-item">🎯 Reebok</div>
+      <div class="brand-item">💫 Tommy</div>
+      <div class="brand-item">👟 Nike</div>
+      <div class="brand-item">⭐ Adidas</div>
+      <div class="brand-item">🏆 Puma</div>
+      <div class="brand-item">💎 Levi's</div>
+    </div>
+  </section>
+
+  <!-- DEALS BANNER -->
+  <section class="deals-banner">
+    <div class="deal-card">
+  <h3>🔥 Flash Sale</h3>
+  <p>Up to 50% off on clothing</p>
+  <button onclick="filterCategory('clothing', document.querySelector('.cat-link:nth-child(2)'))">Grab Deal</button>
+</div>
+<div class="deal-card">
+  <h3>⚡ New Arrivals</h3>
+  <p>Latest electronics just dropped</p>
+  <button onclick="filterCategory('electronics', document.querySelector('.cat-link:nth-child(5)'))">Shop Now</button>
+</div>
+<div class="deal-card">
+  <h3>💎 Premium</h3>
+  <p>Exclusive accessories collection</p>
+  <button onclick="filterCategory('accessories', document.querySelector('.cat-link:nth-child(4)'))">Explore</button>
+</div>
+  </section>
+
+  <!-- SEARCH BAR -->
+  <section class="search-section">
+    <div class="search-bar">
+      <i class="fa fa-search"></i>
+      <input type="text" id="search-input" placeholder="Search for products, brands and more..." oninput="searchProducts()">
+    </div>
+  </section>
+
+  <!-- PRODUCTS -->
+ <section class="products-section">
+  <div class="products-wrapper">
+    <div class="products-header">
+      <h2>Featured Products</h2>
+      <div class="filters">
+        <select id="sort-select" onchange="sortProducts()">
+          <option value="default">Sort By</option>
+          <option value="low">Price: Low to High</option>
+          <option value="high">Price: High to Low</option>
+          <option value="rating">Top Rated</option>
+        </select>
+        <select id="price-filter" onchange="filterPrice()">
+          <option value="">All Prices</option>
+          <option value="0-500">Under ₹500</option>
+          <option value="500-1000">₹500 - ₹1000</option>
+          <option value="1000-2000">₹1000 - ₹2000</option>
+          <option value="2000-5000">₹2000 - ₹5000</option>
+          <option value="5000-99999">Above ₹5000</option>
+        </select>
+      </div>
+    </div>
+    <p id="product-count"></p>
     <div id="product-list"></div>
-  </main>
+  </div>
+</section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-brand">
+        <div class="logo">Buy<span>Bee</span> 🐝</div>
+        <p>Premium shopping experience<br>delivered to your door.</p>
+      </div>
+      <div class="footer-links">
+        <h4>Shop</h4>
+        <a href="#">Clothing</a>
+        <a href="#">Footwear</a>
+        <a href="#">Accessories</a>
+        <a href="#">Electronics</a>
+      </div>
+      <div class="footer-links">
+        <h4>Help</h4>
+        <a href="#">Track Order</a>
+        <a href="#">Returns</a>
+        <a href="#">Contact Us</a>
+        <a href="#">FAQs</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 BuyBee. All rights reserved.</p>
+    </div>
+  </footer>
 
   <script src="script.js"></script>
 </body>
