@@ -1,4 +1,4 @@
-const GROQ_API_KEY = "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"; // ← paste your gsk_... key here
+const GROQ_API_KEY = "Your groq key here"; // ← paste your gsk_... key here
 
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
 

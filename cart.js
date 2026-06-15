@@ -254,7 +254,7 @@ function applyPromo() {
 async function getAISuggestion() {
   if (cart.length === 0) return;
 
-  const GROQ_API_KEY = "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";
+  const GROQ_API_KEY = "Your Groq Key here";
 
   const itemNames = cart.map(i => i.name).join(", ");
 
