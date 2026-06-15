@@ -9,6 +9,8 @@
 </head>
 <body>
 
+  <canvas id="particle-canvas"></canvas>
+
   <header>
     <div class="logo">Buy<span>Bee</span> 🐝</div>
     <nav class="categories-nav"></nav>
@@ -20,33 +22,70 @@
   </header>
 
   <main>
-    <h2>🛒 Your Cart</h2>
-    <div class="cart-container">
+    <!-- Page title -->
+    <div class="cart-title-row">
+      <h2><i class="fa fa-shopping-cart"></i> Your Cart</h2>
+      <span id="cart-badge"></span>
+    </div>
+
+    <div class="cart-container" id="cart-container">
+
+      <!-- Cart Items -->
       <div id="cart-items"></div>
-      <div class="cart-summary">
+
+      <!-- Order Summary -->
+      <div class="cart-summary" id="cart-summary">
         <h3>Order Summary</h3>
+
         <div class="summary-row">
           <span>Items</span>
           <span id="cart-item-count">0</span>
         </div>
         <div class="summary-row">
-          <span>Total Amount</span>
+          <span>Subtotal</span>
           <span>₹<span id="cart-total">0</span></span>
+        </div>
+        <div class="summary-row discount-row">
+          <span>🎉 Discount</span>
+          <span class="discount-value">- ₹<span id="cart-discount">0</span></span>
+        </div>
+        <div class="summary-row">
+          <span>🚚 Delivery</span>
+          <span id="delivery-charge" class="free-delivery">FREE</span>
         </div>
         <div class="summary-row total">
           <span>To Pay</span>
           <span>₹<span id="cart-topay">0</span></span>
         </div>
+
+        <!-- Promo code -->
+        <div class="promo-row">
+          <input type="text" id="promo-input" placeholder="Promo code (try BUYBEE10)">
+          <button onclick="applyPromo()">Apply</button>
+        </div>
+        <p id="promo-msg"></p>
+
         <a href="checkout.html">
-          <button id="checkout-btn">Proceed to Checkout →</button>
+          <button id="checkout-btn">
+            Proceed to Checkout <i class="fa fa-arrow-right"></i>
+          </button>
         </a>
-        <a href="index.html" style="display:block;text-align:center;margin-top:15px;color:#888;font-size:13px;">
-          Continue Shopping
+
+        <a href="index.html" class="continue-shopping">
+          <i class="fa fa-arrow-left"></i> Continue Shopping
         </a>
+
+        <!-- AI suggestions box -->
+        <div class="ai-suggest-box" id="ai-suggest-box" style="display:none">
+          <div class="ai-suggest-title">🤖 Complete the Look</div>
+          <p id="ai-suggest-text"></p>
+        </div>
       </div>
+
     </div>
   </main>
 
+  <script src="particle.js"></script>
   <script src="cart.js"></script>
 </body>
 </html>

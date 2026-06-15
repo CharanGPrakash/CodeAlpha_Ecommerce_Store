@@ -4,59 +4,556 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BuyBee - Login</title>
-  <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+
+    :root {
+      --accent: #f5c518;
+      --accent-hover: #e6b800;
+    }
+
+    /* ── ANIMATED BACKGROUND ── */
+    body {
+      min-height: 100vh;
+      background: #0a0a0a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Floating background orbs */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.15;
+      animation: orbFloat 8s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .orb1 {
+      width: 500px; height: 500px;
+      background: #f5c518;
+      top: -150px; left: -150px;
+      animation-delay: 0s;
+    }
+
+    .orb2 {
+      width: 400px; height: 400px;
+      background: #ff6b35;
+      bottom: -100px; right: -100px;
+      animation-delay: 3s;
+    }
+
+    .orb3 {
+      width: 300px; height: 300px;
+      background: #7c3aed;
+      top: 50%; left: 60%;
+      animation-delay: 1.5s;
+    }
+
+    @keyframes orbFloat {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33%       { transform: translate(30px, -30px) scale(1.05); }
+      66%       { transform: translate(-20px, 20px) scale(0.95); }
+    }
+
+    /* Grid lines background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(245,197,24,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(245,197,24,0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Particle canvas */
+    #login-canvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── GLASS CARD ── */
+    .auth-wrapper {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 440px;
+      padding: 20px;
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 24px;
+      padding: 40px;
+      box-shadow:
+        0 25px 50px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      animation: cardIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(30px) scale(0.96); }
+      to   { opacity: 1; transform: translateY(0)    scale(1); }
+    }
+
+    /* ── LOGO ── */
+    .auth-logo {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .bee-icon {
+      font-size: 52px;
+      display: inline-block;
+      animation: beeBounce 2s ease-in-out infinite;
+      filter: drop-shadow(0 0 20px rgba(245,197,24,0.5));
+    }
+
+    @keyframes beeBounce {
+      0%, 100% { transform: translateY(0) rotate(-5deg); }
+      50%       { transform: translateY(-8px) rotate(5deg); }
+    }
+
+    .auth-logo h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #f5c518;
+      margin-top: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .auth-logo h1 span { color: #fff; }
+
+    .auth-logo p {
+      color: #666;
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    /* ── TAB SWITCHER ── */
+    .auth-tabs {
+      display: flex;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 28px;
+    }
+
+    .auth-tab {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      background: none;
+      color: #555;
+      font-size: 14px;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 500;
+      cursor: pointer;
+      border-radius: 9px;
+      transition: all 0.3s;
+    }
+
+    .auth-tab.active {
+      background: var(--accent);
+      color: #000;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(245,197,24,0.3);
+    }
+
+    /* ── FORM SECTIONS ── */
+    .form-section { display: none; }
+    .form-section.active {
+      display: block;
+      animation: formIn 0.35s ease forwards;
+    }
+
+    @keyframes formIn {
+      from { opacity: 0; transform: translateX(10px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    /* ── INPUT FIELDS ── */
+    .input-group {
+      position: relative;
+      margin-bottom: 16px;
+    }
+
+    .input-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: #666;
+      margin-bottom: 6px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-wrap i {
+      position: absolute;
+      left: 14px;
+      color: #444;
+      font-size: 14px;
+      transition: color 0.3s;
+      pointer-events: none;
+    }
+
+    .input-wrap input {
+      width: 100%;
+      padding: 13px 14px 13px 40px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      color: #fff;
+      font-size: 14px;
+      font-family: 'Poppins', sans-serif;
+      outline: none;
+      transition: all 0.3s;
+    }
+
+    .input-wrap input:focus {
+      border-color: var(--accent);
+      background: rgba(245,197,24,0.05);
+      box-shadow: 0 0 0 3px rgba(245,197,24,0.1);
+    }
+
+    .input-wrap input:focus + i,
+    .input-wrap input:focus ~ i { color: var(--accent); }
+
+    .input-wrap i.input-icon-left { pointer-events: none; }
+
+    /* fix icon color on focus — needs sibling trick */
+    .input-wrap:focus-within i { color: var(--accent); }
+
+    .input-wrap input::placeholder { color: #333; }
+
+    /* Password toggle */
+    .pwd-toggle {
+      position: absolute;
+      right: 14px;
+      background: none;
+      border: none;
+      color: #444;
+      cursor: pointer;
+      font-size: 14px;
+      transition: color 0.2s;
+      z-index: 1;
+    }
+
+    .pwd-toggle:hover { color: var(--accent); }
+
+    /* ── SUBMIT BUTTON ── */
+    .auth-btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--accent);
+      color: #000;
+      border: none;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: 'Poppins', sans-serif;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .auth-btn:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(245,197,24,0.4);
+    }
+
+    .auth-btn:active { transform: scale(0.98); }
+
+    .auth-btn.loading {
+      pointer-events: none;
+      opacity: 0.8;
+    }
+
+    .auth-btn .btn-text { transition: opacity 0.2s; }
+    .auth-btn .btn-spinner {
+      display: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(0,0,0,0.3);
+      border-top-color: #000;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto;
+    }
+
+    .auth-btn.loading .btn-text { display: none; }
+    .auth-btn.loading .btn-spinner { display: block; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── MESSAGE ── */
+    #auth-message {
+      margin-top: 14px;
+      text-align: center;
+      font-size: 13px;
+      min-height: 20px;
+      border-radius: 8px;
+      padding: 0;
+      transition: all 0.3s;
+    }
+
+    #auth-message.success {
+      background: rgba(34,197,94,0.1);
+      border: 1px solid rgba(34,197,94,0.2);
+      color: #22c55e;
+      padding: 10px;
+    }
+
+    #auth-message.error {
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.2);
+      color: #ef4444;
+      padding: 10px;
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 20px 0;
+      color: #333;
+      font-size: 12px;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(255,255,255,0.07);
+    }
+
+    /* ── BACK TO HOME ── */
+    .back-home {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .back-home a {
+      color: #555;
+      text-decoration: none;
+      font-size: 13px;
+      transition: color 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .back-home a:hover { color: var(--accent); }
+
+    /* ── SUCCESS OVERLAY ── */
+    .success-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.9);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .success-overlay.show {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    .success-icon {
+      font-size: 70px;
+      animation: popIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0); }
+      to   { transform: scale(1); }
+    }
+
+    .success-overlay h2 {
+      color: #f5c518;
+      font-size: 24px;
+    }
+
+    .success-overlay p { color: #888; font-size: 14px; }
+  </style>
 </head>
 <body>
 
-  <header>
-    <div class="logo">Buy<span>Bee</span> 🐝</div>
-    <nav class="categories-nav"></nav>
-    <nav id="main-nav">
-      <a href="index.html"><i class="fa fa-home"></i> Home</a>
-      <a href="cart.html" class="cart-btn">🛒 Cart (<span id="cart-count">0</span>)</a>
-    </nav>
-  </header>
+  <!-- Animated background -->
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+  <canvas id="login-canvas"></canvas>
 
-  <main>
-    <div id="auth-container">
+  <!-- Success overlay -->
+  <div class="success-overlay" id="success-overlay">
+    <div class="success-icon">🎉</div>
+    <h2>Welcome to BuyBee!</h2>
+    <p>Redirecting you to the store...</p>
+  </div>
 
-      <!-- Login Form -->
-      <div id="login-section">
-        <div style="text-align:center;margin-bottom:25px;">
-          <div style="font-size:40px;">🐝</div>
-          <h2 style="font-size:24px;margin-top:10px;">Welcome Back!</h2>
-          <p style="color:#888;font-size:13px;margin-top:5px;">Login to your BuyBee account</p>
-        </div>
-        <label>Email Address</label>
-        <input type="email" id="login-email" placeholder="Enter your email">
-        <label>Password</label>
-        <input type="password" id="login-password" placeholder="Enter your password">
-        <button onclick="login()">Login to BuyBee</button>
-        <p>Don't have an account? <a href="#" onclick="toggleForm()">Register here</a></p>
+  <!-- Auth Card -->
+  <div class="auth-wrapper">
+    <div class="glass-card">
+
+      <!-- Logo -->
+      <div class="auth-logo">
+        <div class="bee-icon">🐝</div>
+        <h1>Buy<span>Bee</span></h1>
+        <p>Premium Shopping Experience</p>
       </div>
 
-      <!-- Register Form -->
-      <div id="register-section" style="display:none;">
-        <div style="text-align:center;margin-bottom:25px;">
-          <div style="font-size:40px;">🐝</div>
-          <h2 style="font-size:24px;margin-top:10px;">Create Account</h2>
-          <p style="color:#888;font-size:13px;margin-top:5px;">Join BuyBee today!</p>
-        </div>
-        <label>Full Name</label>
-        <input type="text" id="reg-name" placeholder="Enter your full name">
-        <label>Email Address</label>
-        <input type="email" id="reg-email" placeholder="Enter your email">
-        <label>Password</label>
-        <input type="password" id="reg-password" placeholder="Create a password">
-        <button onclick="register()">Create Account</button>
-        <p>Already have an account? <a href="#" onclick="toggleForm()">Login here</a></p>
+      <!-- Tab switcher -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="switchTab('login')">Login</button>
+        <button class="auth-tab" onclick="switchTab('register')">Register</button>
       </div>
 
-      <p id="auth-message" style="margin-top:15px;text-align:center;font-size:13px;"></p>
+      <!-- LOGIN FORM -->
+      <div class="form-section active" id="login-section">
+        <div class="input-group">
+          <label>Email Address</label>
+          <div class="input-wrap">
+            <i class="fa fa-envelope"></i>
+            <input type="email" id="login-email" placeholder="your@email.com"
+              onkeydown="if(event.key==='Enter') login()">
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Password</label>
+          <div class="input-wrap">
+            <i class="fa fa-lock"></i>
+            <input type="password" id="login-password" placeholder="Enter your password"
+              onkeydown="if(event.key==='Enter') login()">
+            <button class="pwd-toggle" type="button" onclick="togglePwd('login-password', this)">
+              <i class="fa fa-eye"></i>
+            </button>
+          </div>
+        </div>
+        <button class="auth-btn" id="login-btn" onclick="login()">
+          <span class="btn-text">Login to BuyBee 🐝</span>
+          <div class="btn-spinner"></div>
+        </button>
+      </div>
+
+      <!-- REGISTER FORM -->
+      <div class="form-section" id="register-section">
+        <div class="input-group">
+          <label>Full Name</label>
+          <div class="input-wrap">
+            <i class="fa fa-user"></i>
+            <input type="text" id="reg-name" placeholder="Your full name"
+              onkeydown="if(event.key==='Enter') register()">
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Email Address</label>
+          <div class="input-wrap">
+            <i class="fa fa-envelope"></i>
+            <input type="email" id="reg-email" placeholder="your@email.com"
+              onkeydown="if(event.key==='Enter') register()">
+          </div>
+        </div>
+        <div class="input-group">
+          <label>Password</label>
+          <div class="input-wrap">
+            <i class="fa fa-lock"></i>
+            <input type="password" id="reg-password" placeholder="Create a strong password"
+              onkeydown="if(event.key==='Enter') register()">
+            <button class="pwd-toggle" type="button" onclick="togglePwd('reg-password', this)">
+              <i class="fa fa-eye"></i>
+            </button>
+          </div>
+        </div>
+        <button class="auth-btn" id="register-btn" onclick="register()">
+          <span class="btn-text">Create Account 🚀</span>
+          <div class="btn-spinner"></div>
+        </button>
+      </div>
+
+      <!-- Message -->
+      <div id="auth-message"></div>
+
+      <!-- Divider + back -->
+      <div class="divider">or</div>
+      <div class="back-home">
+        <a href="index.html">
+          <i class="fa fa-arrow-left"></i> Back to BuyBee Store
+        </a>
+      </div>
+
     </div>
-  </main>
+  </div>
 
   <script src="auth.js"></script>
+  <script>
+    // Mini particle system for login page
+    const canvas = document.getElementById("login-canvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    window.addEventListener("resize", () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+
+    const pts = Array.from({ length: 50 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 1.5 + 0.3,
+      sx: (Math.random() - 0.5) * 0.4,
+      sy: (Math.random() - 0.5) * 0.4,
+      o: Math.random() * 0.4 + 0.1
+    }));
+
+    (function loop() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      pts.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(245,197,24,${p.o})`;
+        ctx.fill();
+        p.x += p.sx; p.y += p.sy;
+        if (p.x < 0 || p.x > canvas.width)  p.sx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.sy *= -1;
+      });
+      requestAnimationFrame(loop);
+    })();
+  </script>
 </body>
 </html>

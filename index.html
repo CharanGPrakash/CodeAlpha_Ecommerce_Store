@@ -1,4 +1,4 @@
-index.html: <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -9,18 +9,38 @@ index.html: <!DOCTYPE html>
 </head>
 <body>
 
+  <!-- PARTICLE CANVAS (must be first, behind everything) -->
+  <canvas id="particle-canvas"></canvas>
+
   <!-- NAVBAR -->
   <header>
     <div class="logo">Buy<span>Bee</span> 🐝</div>
 
-   <nav class="categories-nav">
-  <a href="#" onclick="filterCategory('all', this)" class="cat-link active">All</a>
-  <a href="#" onclick="filterCategory('clothing', this)" class="cat-link">👕 Clothing</a>
-  <a href="#" onclick="filterCategory('footwear', this)" class="cat-link">👟 Footwear</a>
-  <a href="#" onclick="filterCategory('accessories', this)" class="cat-link">⌚ Accessories</a>
-  <a href="#" onclick="filterCategory('electronics', this)" class="cat-link">🎧 Electronics</a>
-  <a href="#" onclick="filterCategory('bags', this)" class="cat-link">🎒 Bags</a>
-   </nav>
+    <!-- SEARCH BAR IN HEADER -->
+    <div class="header-search">
+      <i class="fa fa-search search-icon"></i>
+      <input
+        type="text"
+        id="search-input"
+        placeholder="Search for products, brands..."
+        oninput="searchProducts()"
+        onkeydown="handleSearchKey(event)"
+        autocomplete="off"
+      >
+      <button class="search-clear" id="search-clear" onclick="clearSearch()" style="display:none">
+        <i class="fa fa-times"></i>
+      </button>
+      <div class="search-suggestions" id="search-suggestions"></div>
+    </div>
+
+    <nav class="categories-nav">
+      <a href="#" onclick="filterCategory('all', this)" class="cat-link active">All</a>
+      <a href="#" onclick="filterCategory('clothing', this)" class="cat-link">👕 Clothing</a>
+      <a href="#" onclick="filterCategory('footwear', this)" class="cat-link">👟 Footwear</a>
+      <a href="#" onclick="filterCategory('accessories', this)" class="cat-link">⌚ Accessories</a>
+      <a href="#" onclick="filterCategory('electronics', this)" class="cat-link">🎧 Electronics</a>
+      <a href="#" onclick="filterCategory('bags', this)" class="cat-link">🎒 Bags</a>
+    </nav>
 
     <nav id="main-nav">
       <a href="orders.html"><i class="fa fa-box"></i> Orders</a>
@@ -81,56 +101,67 @@ index.html: <!DOCTYPE html>
   <!-- DEALS BANNER -->
   <section class="deals-banner">
     <div class="deal-card">
-  <h3>🔥 Flash Sale</h3>
-  <p>Up to 50% off on clothing</p>
-  <button onclick="filterCategory('clothing', document.querySelector('.cat-link:nth-child(2)'))">Grab Deal</button>
-</div>
-<div class="deal-card">
-  <h3>⚡ New Arrivals</h3>
-  <p>Latest electronics just dropped</p>
-  <button onclick="filterCategory('electronics', document.querySelector('.cat-link:nth-child(5)'))">Shop Now</button>
-</div>
-<div class="deal-card">
-  <h3>💎 Premium</h3>
-  <p>Exclusive accessories collection</p>
-  <button onclick="filterCategory('accessories', document.querySelector('.cat-link:nth-child(4)'))">Explore</button>
-</div>
-  </section>
-
-  <!-- SEARCH BAR -->
-  <section class="search-section">
-    <div class="search-bar">
-      <i class="fa fa-search"></i>
-      <input type="text" id="search-input" placeholder="Search for products, brands and more..." oninput="searchProducts()">
+      <h3>🔥 Flash Sale</h3>
+      <p>Up to 50% off on clothing</p>
+      <button onclick="filterCategory('clothing', document.querySelector('.cat-link:nth-child(2)'))">Grab Deal</button>
+    </div>
+    <div class="deal-card">
+      <h3>⚡ New Arrivals</h3>
+      <p>Latest electronics just dropped</p>
+      <button onclick="filterCategory('electronics', document.querySelector('.cat-link:nth-child(5)'))">Shop Now</button>
+    </div>
+    <div class="deal-card">
+      <h3>💎 Premium</h3>
+      <p>Exclusive accessories collection</p>
+      <button onclick="filterCategory('accessories', document.querySelector('.cat-link:nth-child(4)'))">Explore</button>
     </div>
   </section>
 
   <!-- PRODUCTS -->
- <section class="products-section">
-  <div class="products-wrapper">
-    <div class="products-header">
-      <h2>Featured Products</h2>
-      <div class="filters">
-        <select id="sort-select" onchange="sortProducts()">
-          <option value="default">Sort By</option>
-          <option value="low">Price: Low to High</option>
-          <option value="high">Price: High to Low</option>
-          <option value="rating">Top Rated</option>
-        </select>
-        <select id="price-filter" onchange="filterPrice()">
-          <option value="">All Prices</option>
-          <option value="0-500">Under ₹500</option>
-          <option value="500-1000">₹500 - ₹1000</option>
-          <option value="1000-2000">₹1000 - ₹2000</option>
-          <option value="2000-5000">₹2000 - ₹5000</option>
-          <option value="5000-99999">Above ₹5000</option>
-        </select>
+  <section class="products-section">
+    <div class="products-wrapper">
+      <div class="products-header">
+        <h2>Featured Products</h2>
+        <div class="filters">
+          <select id="sort-select" onchange="sortProducts()">
+            <option value="default">Sort By</option>
+            <option value="low">Price: Low to High</option>
+            <option value="high">Price: High to Low</option>
+            <option value="rating">Top Rated</option>
+          </select>
+          <select id="price-filter" onchange="filterPrice()">
+            <option value="">All Prices</option>
+            <option value="0-500">Under ₹500</option>
+            <option value="500-1000">₹500 - ₹1000</option>
+            <option value="1000-2000">₹1000 - ₹2000</option>
+            <option value="2000-5000">₹2000 - ₹5000</option>
+            <option value="5000-99999">Above ₹5000</option>
+          </select>
+        </div>
+      </div>
+      <p id="product-count"></p>
+      <div id="product-list"></div>
+    </div>
+  </section>
+
+  <!-- AI CHATBOT (floating, bottom-right) -->
+  <div id="ai-chat-widget">
+    <button id="ai-chat-toggle" onclick="toggleChat()" title="AI Shopping Assistant">
+      <i class="fa fa-robot"></i>
+      <span class="chat-badge">AI</span>
+    </button>
+    <div id="ai-chat-box" style="display:none">
+      <div class="chat-header">
+        <span>🤖 BuyBee AI Assistant</span>
+        <button onclick="toggleChat()"><i class="fa fa-times"></i></button>
+      </div>
+      <div id="chat-messages"></div>
+      <div class="chat-input-row">
+        <input type="text" id="chat-input" placeholder="Ask me anything..." onkeydown="if(event.key==='Enter') sendChat()">
+        <button onclick="sendChat()"><i class="fa fa-paper-plane"></i></button>
       </div>
     </div>
-    <p id="product-count"></p>
-    <div id="product-list"></div>
   </div>
-</section>
 
   <!-- FOOTER -->
   <footer>
@@ -159,9 +190,10 @@ index.html: <!DOCTYPE html>
     </div>
   </footer>
 
+  <!-- SCRIPTS: loaded once, at bottom, no defer needed here -->
+  <script src="particle.js"></script>
   <script src="script.js"></script>
-  <canvas id="particle-canvas"></canvas>
-<script src="particles.js"></script>
-<script src="script.js"></script>
+  <script src="chatbot.js"></script>
+
 </body>
 </html>
